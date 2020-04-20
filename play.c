@@ -46,8 +46,10 @@ static int kbhit() {
 static int getch() {
   int r;
   unsigned char c;
-  if ((r = read(0, &c, sizeof(c))) < 0)  return r;
-  else return c;
+  if ((r = read(0, &c, sizeof(c))) < 0)
+    return r;
+  else
+    return c;
 }
 
 static void drow_screan(int len, char **file, int now) {
@@ -57,13 +59,25 @@ static void drow_screan(int len, char **file, int now) {
     fprintf(stderr, "can not get twemianl size.\n\r");
     exit(2);
   }
-  for (int i = 0; i < len && i < ws.ws_row - 2; i++) 
-    printf("%s%s\033[0m\n\r", 
-        i == now ? "\033[31m" : "",
-        basename(file[i]));
+  int offset = 0;
 
-  printf("\033[%d;1H%s%s\r", 
-      ws.ws_row,
+  if (ws.ws_row < len) {
+    if (len - (now - ws.ws_row / 2) < ws.ws_row) {
+      offset = len - ws.ws_row + 1;  
+    } else {
+      if (now > ws.ws_row / 2)
+        offset = now - ws.ws_row / 2; 
+    }
+  }
+
+  for (int i = 0; i + offset < len && i < ws.ws_row - 1; i++) 
+    printf("%s%s\033[0m\n\r", 
+        i + offset == now ? "\033[31m" : "",
+        basename(file[i + offset]));
+
+  printf("\033[%d;1H (%d/%d)%s%s\r",
+      ws.ws_row, 
+      now, len,
       play_loop ? "Loop " : "",
       play_random ? "Random " : "");
   fflush(stdout);
