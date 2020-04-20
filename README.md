@@ -1,4 +1,4 @@
-# paly.c
+# play.c
 play.c dead simple tui music player writrn in c
 
 ## how to ues:
