@@ -50,7 +50,7 @@ static int getch() {
   else return c;
 }
 
-static void drow_screan(int len, char **file) {
+static void drow_screan(int len, char **file, int now) {
   printf("\x1b[2J\x1b[H");
   struct winsize ws;
   if (ioctl(STDOUT_FILENO, TIOCGWINSZ, &ws) == -1 || ws.ws_col == 0) {
@@ -58,7 +58,9 @@ static void drow_screan(int len, char **file) {
     exit(2);
   }
   for (int i = 0; i < len && i < ws.ws_row - 2; i++) 
-    printf("%s\n\r", basename(file[i]));
+    printf("%s%s\033[0m\n\r", 
+        i == now ? "\033[31m" : "",
+        basename(file[i]));
 
   printf("\033[%d;1H%s%s\r", 
       ws.ws_row,
@@ -92,7 +94,6 @@ int main(int argc, char **argv) {
 
   do {
     for (int i = 0; i >= 0 && i < argc; i++) {
-      drow_screan(argc, argv);
       int err, channels, encoding;
       mpg123_init();
       mpg123_handle *mh = mpg123_new(NULL, &err);
@@ -101,10 +102,11 @@ int main(int argc, char **argv) {
       size_t done;
       long rate;
 
-      if (!play_random) 
-        mpg123_open(mh, argv[i]);
-      else
-        mpg123_open(mh, argv[rand() % argc]);
+      if (play_random) 
+        i = rand() % argc;
+      mpg123_open(mh, argv[i]);
+
+      drow_screan(argc, argv, i);
 
       mpg123_getformat(mh, &rate, &channels, &encoding);
       format.bits = mpg123_encsize(encoding) * BITS;
@@ -142,11 +144,11 @@ int main(int argc, char **argv) {
               break;
             case 108: // l
               play_loop = !play_loop;
-              drow_screan(argc, argv);
+              drow_screan(argc, argv, i);
               break;
             case 114: // r
               play_random = !play_random;
-              drow_screan(argc, argv);
+              drow_screan(argc, argv, i);
               break;
             case 32:  // space
               pause = !pause;
