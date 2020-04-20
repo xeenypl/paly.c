@@ -8,6 +8,7 @@
 #include <termios.h>
 #include <sys/ioctl.h>
 #include <libgen.h>
+#include <time.h>
 
 #define BITS 8
 
@@ -84,12 +85,13 @@ int main(int argc, char **argv) {
 
   if(argc < 1) using();
   
+  srand((unsigned) time(NULL));
   set_terminal_mode();
   ao_initialize();
   driver = ao_default_driver_id();
 
   do {
-    for (int i = 0; i < argc; i ++) {
+    for (int i = 0; i >= 0 && i < argc; i++) {
       drow_screan(argc, argv);
       int err, channels, encoding;
       mpg123_init();
@@ -99,7 +101,11 @@ int main(int argc, char **argv) {
       size_t done;
       long rate;
 
-      mpg123_open(mh, argv[i]);
+      if (!play_random) 
+        mpg123_open(mh, argv[i]);
+      else
+        mpg123_open(mh, argv[rand() % argc]);
+
       mpg123_getformat(mh, &rate, &channels, &encoding);
       format.bits = mpg123_encsize(encoding) * BITS;
       format.rate = rate;
