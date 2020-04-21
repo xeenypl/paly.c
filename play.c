@@ -77,7 +77,7 @@ static void drow_screan(int len, char **file, int now) {
 
   printf("\033[%d;1H (%d/%d)%s%s\r",
       ws.ws_row, 
-      now, len,
+      now + 1, len,
       play_loop ? "Loop " : "",
       play_random ? "Random " : "");
   fflush(stdout);
