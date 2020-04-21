@@ -75,7 +75,7 @@ static void drow_screan(int len, char **file, int now) {
         i + offset == now ? "\033[31m" : "",
         basename(file[i + offset]));
 
-  printf("\033[%d;1H (%d/%d)%s%s\r",
+  printf("\033[%d;1H (%d/%d) %s%s\r",
       ws.ws_row, 
       now + 1, len,
       play_loop ? "Loop " : "",
