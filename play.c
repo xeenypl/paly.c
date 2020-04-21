@@ -107,7 +107,7 @@ int main(int argc, char **argv) {
   driver = ao_default_driver_id();
 
   do {
-    for (int i = 0; i >= 0 && i < argc; i++) {
+    for (int i = 0; i < argc; i++) {
       int err, channels, encoding;
       mpg123_init();
       mpg123_handle *mh = mpg123_new(NULL, &err);
@@ -137,8 +137,6 @@ int main(int argc, char **argv) {
         if (!pause) { 
           if(mpg123_read(mh, buffer, buffer_size, &done) == MPG123_OK)
             ao_play(dev, buffer, done);
-          else
-            exit(0);
         }
         if (kbhit()) {
           char ch = getch();
