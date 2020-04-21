@@ -137,6 +137,8 @@ int main(int argc, char **argv) {
         if (!pause) { 
           if(mpg123_read(mh, buffer, buffer_size, &done) == MPG123_OK)
             ao_play(dev, buffer, done);
+          else
+            break;
         }
         if (kbhit()) {
           char ch = getch();
